@@ -18,7 +18,7 @@ export default function ProjectsGrid() {
   const { projetos, loading } = useProjetos()
 
   return (
-    <section id="projetos" className="py-24 lg:py-32 px-6 lg:px-12">
+    <section id="projetos" className="py-16 md:py-24 lg:py-32 px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
         <div className="mb-16">
           <p className="text-xs text-mist tracking-[0.3em] uppercase mb-3">Portfólio</p>

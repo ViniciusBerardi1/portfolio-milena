@@ -40,33 +40,67 @@ ALTER TABLE projetos        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE imagens_projeto ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contatos        ENABLE ROW LEVEL SECURITY;
 
--- projetos: leitura pública, escrita somente autenticado
-CREATE POLICY "projetos_public_read"
+-- ============================================================
+-- RESET: drop all existing policies before recreating
+-- ============================================================
+
+DROP POLICY IF EXISTS "projetos_public_read"   ON projetos;
+DROP POLICY IF EXISTS "projetos_auth_insert"   ON projetos;
+DROP POLICY IF EXISTS "projetos_auth_update"   ON projetos;
+DROP POLICY IF EXISTS "projetos_auth_delete"   ON projetos;
+DROP POLICY IF EXISTS "projetos_select"        ON projetos;
+DROP POLICY IF EXISTS "projetos_insert"        ON projetos;
+DROP POLICY IF EXISTS "projetos_update"        ON projetos;
+DROP POLICY IF EXISTS "projetos_delete"        ON projetos;
+
+DROP POLICY IF EXISTS "imagens_public_read"    ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_auth_insert"    ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_auth_update"    ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_auth_delete"    ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_select"         ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_insert"         ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_update"         ON imagens_projeto;
+DROP POLICY IF EXISTS "imagens_delete"         ON imagens_projeto;
+
+DROP POLICY IF EXISTS "contatos_public_insert" ON contatos;
+DROP POLICY IF EXISTS "contatos_auth_read"     ON contatos;
+
+-- ============================================================
+-- projetos policies
+-- ============================================================
+
+CREATE POLICY "projetos_select"
   ON projetos FOR SELECT USING (true);
 
-CREATE POLICY "projetos_auth_insert"
-  ON projetos FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "projetos_insert"
+  ON projetos FOR INSERT TO authenticated WITH CHECK (true);
 
-CREATE POLICY "projetos_auth_update"
-  ON projetos FOR UPDATE USING (auth.uid() IS NOT NULL);
+CREATE POLICY "projetos_update"
+  ON projetos FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 
-CREATE POLICY "projetos_auth_delete"
-  ON projetos FOR DELETE USING (auth.uid() IS NOT NULL);
+CREATE POLICY "projetos_delete"
+  ON projetos FOR DELETE TO authenticated USING (true);
 
--- imagens_projeto: leitura pública, escrita somente autenticado
-CREATE POLICY "imagens_public_read"
+-- ============================================================
+-- imagens_projeto policies
+-- ============================================================
+
+CREATE POLICY "imagens_select"
   ON imagens_projeto FOR SELECT USING (true);
 
-CREATE POLICY "imagens_auth_insert"
-  ON imagens_projeto FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "imagens_insert"
+  ON imagens_projeto FOR INSERT TO authenticated WITH CHECK (true);
 
-CREATE POLICY "imagens_auth_update"
-  ON imagens_projeto FOR UPDATE USING (auth.uid() IS NOT NULL);
+CREATE POLICY "imagens_update"
+  ON imagens_projeto FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 
-CREATE POLICY "imagens_auth_delete"
-  ON imagens_projeto FOR DELETE USING (auth.uid() IS NOT NULL);
+CREATE POLICY "imagens_delete"
+  ON imagens_projeto FOR DELETE TO authenticated USING (true);
 
--- contatos: insert público, leitura somente autenticado
+-- ============================================================
+-- contatos policies
+-- ============================================================
+
 CREATE POLICY "contatos_public_insert"
   ON contatos FOR INSERT WITH CHECK (true);
 
@@ -74,7 +108,36 @@ CREATE POLICY "contatos_auth_read"
   ON contatos FOR SELECT USING (auth.uid() IS NOT NULL);
 
 -- ============================================================
--- Storage
--- Criar manualmente no dashboard:
--- Storage > New bucket > nome: "imagens" > Public bucket: ON
+-- Storage policies for bucket "imagens"
+-- Ensure bucket exists as public
 -- ============================================================
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('imagens', 'imagens', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Drop any existing storage policies for this bucket
+DROP POLICY IF EXISTS "imagens_storage_select" ON storage.objects;
+DROP POLICY IF EXISTS "imagens_storage_insert" ON storage.objects;
+DROP POLICY IF EXISTS "imagens_storage_update" ON storage.objects;
+DROP POLICY IF EXISTS "imagens_storage_delete" ON storage.objects;
+
+-- Public read (no auth needed to view images)
+CREATE POLICY "imagens_storage_select"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'imagens');
+
+-- Authenticated users can upload
+CREATE POLICY "imagens_storage_insert"
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'imagens');
+
+-- Authenticated users can replace/update
+CREATE POLICY "imagens_storage_update"
+  ON storage.objects FOR UPDATE TO authenticated
+  USING (bucket_id = 'imagens');
+
+-- Authenticated users can delete
+CREATE POLICY "imagens_storage_delete"
+  ON storage.objects FOR DELETE TO authenticated
+  USING (bucket_id = 'imagens');

@@ -14,7 +14,7 @@ async function uploadFile(file: File): Promise<string> {
   const ext = file.name.split('.').pop() ?? 'jpg'
   const path = `projetos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
   const { error } = await supabase.storage.from('imagens').upload(path, file)
-  if (error) throw error
+  if (error) throw new Error(`Storage: ${error.message}`)
   const { data } = supabase.storage.from('imagens').getPublicUrl(path)
   return data.publicUrl
 }
@@ -122,11 +122,11 @@ export default function ProjectForm() {
       let projetoId = id
       if (!isEditing) {
         const { data, error } = await supabase.from('projetos').insert(projetoData).select('id').single()
-        if (error) throw error
+        if (error) throw new Error(`Projetos DB: ${error.message}`)
         projetoId = data.id
       } else {
         const { error } = await supabase.from('projetos').update(projetoData).eq('id', id!)
-        if (error) throw error
+        if (error) throw new Error(`Projetos DB update: ${error.message}`)
       }
 
       // 3. Remover imagens deletadas
@@ -139,12 +139,13 @@ export default function ProjectForm() {
         const item = images[i]
         if (item.type === 'new') {
           const url = await uploadFile(item.file)
-          await supabase.from('imagens_projeto').insert({
+          const { error } = await supabase.from('imagens_projeto').insert({
             projeto_id: projetoId,
             imagem_url: url,
             alt_text: item.alt_text,
             ordem: i,
           })
+          if (error) throw new Error(`Imagens DB: ${error.message}`)
         } else {
           await supabase.from('imagens_projeto').update({ ordem: i }).eq('id', item.id)
         }

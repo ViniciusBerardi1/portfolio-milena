@@ -39,11 +39,10 @@ export default function HeroSection() {
           Arquitetura & Design de Interiores
         </motion.p>
         <motion.h1
-          className="font-serif text-5xl md:text-7xl lg:text-8xl font-light leading-[1.05] mb-7"
+          className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light leading-[1.05] mb-7"
           variants={fadeUp}
         >
-          Arquitetura que<br />
-          <em>conta histórias</em>
+          Arquitetura que <em>conta histórias</em>
         </motion.h1>
         <motion.p
           className="text-white/60 text-base md:text-lg max-w-sm mx-auto font-light"

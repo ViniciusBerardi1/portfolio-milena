@@ -31,7 +31,7 @@ export default function About() {
         schema={schema}
       />
       <motion.div variants={fadeIn} initial="hidden" animate="visible">
-      <section className="pt-40 pb-20 px-6 lg:px-12">
+      <section className="pt-28 md:pt-40 pb-12 md:pb-20 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.p
             className="text-xs text-mist tracking-[0.3em] uppercase mb-4"
@@ -42,19 +42,18 @@ export default function About() {
             Sobre
           </motion.p>
           <motion.h1
-            className="font-serif text-5xl lg:text-7xl font-light text-charcoal leading-tight"
+            className="font-serif text-4xl sm:text-5xl lg:text-7xl font-light text-charcoal leading-tight"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
           >
-            Arquitetura com<br />
-            <em>propósito</em>
+            Arquitetura com <em>propósito</em>
           </motion.h1>
         </div>
       </section>
 
-      <section className="px-6 lg:px-12 pb-24">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="px-6 lg:px-12 pb-16 md:pb-24">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <motion.div
             className="overflow-hidden"
             variants={fadeIn}

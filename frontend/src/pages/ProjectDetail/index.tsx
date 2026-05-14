@@ -71,7 +71,7 @@ export default function ProjectDetail() {
       </div>
 
       <motion.div
-        className="max-w-4xl mx-auto px-6 lg:px-12 py-16"
+        className="max-w-4xl mx-auto px-6 lg:px-12 py-10 md:py-16"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
@@ -98,7 +98,7 @@ export default function ProjectDetail() {
 
         <motion.h1
           variants={fadeUp}
-          className="font-serif text-4xl lg:text-5xl font-light text-charcoal mb-8 leading-tight"
+          className="font-serif text-3xl md:text-4xl lg:text-5xl font-light text-charcoal mb-8 leading-tight"
         >
           {projeto.titulo}
         </motion.h1>
