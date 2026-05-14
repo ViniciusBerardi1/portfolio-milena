@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useProjeto } from '../../hooks/useProjeto'
 import { fadeIn, fadeUp, staggerContainer, scaleIn } from '../../animations/variants'
+import SEO from '../../components/SEO'
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>()
@@ -38,7 +39,26 @@ export default function ProjectDetail() {
     )
   }
 
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'VisualArtwork',
+    name: projeto.titulo,
+    description: projeto.descricao,
+    image: projeto.capa_url,
+    locationCreated: { '@type': 'Place', name: projeto.localizacao },
+    dateCreated: projeto.created_at,
+    creator: { '@type': 'Person', name: 'Milena', jobTitle: 'Arquiteta' },
+  }
+
   return (
+    <>
+      <SEO
+        title={projeto.titulo}
+        description={projeto.descricao}
+        image={projeto.capa_url}
+        path={`/projetos/${projeto.id}`}
+        schema={schema}
+      />
     <motion.article variants={fadeIn} initial="hidden" animate="visible">
       <div className="relative w-full overflow-hidden" style={{ height: '70vh' }}>
         <img
@@ -116,5 +136,6 @@ export default function ProjectDetail() {
         </div>
       )}
     </motion.article>
+    </>
   )
 }

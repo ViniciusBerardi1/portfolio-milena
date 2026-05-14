@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { fadeIn, fadeUp, staggerContainer } from '../../animations/variants'
 import type { ContatoForm } from '../../types'
 import { supabase } from '../../utils/supabase'
+import SEO from '../../components/SEO'
 
 const contatos = [
   { label: 'Email', value: 'milena@arquitetura.com.br', href: 'mailto:milena@arquitetura.com.br' },
@@ -38,7 +39,13 @@ export default function Contact() {
   }
 
   return (
-    <motion.div variants={fadeIn} initial="hidden" animate="visible">
+    <>
+      <SEO
+        title="Contato"
+        description="Entre em contato para discutir seu projeto. Responderei em até 48 horas."
+        path="/contato"
+      />
+      <motion.div variants={fadeIn} initial="hidden" animate="visible">
       <section className="pt-40 pb-20 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.p
@@ -164,5 +171,6 @@ export default function Contact() {
         </div>
       </section>
     </motion.div>
+    </>
   )
 }

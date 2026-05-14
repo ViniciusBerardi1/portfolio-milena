@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { fadeIn, fadeUp, staggerContainer } from '../../animations/variants'
+import SEO from '../../components/SEO'
 
 const ABOUT_IMAGE = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80'
 
@@ -10,9 +11,26 @@ const especialidades = [
   { titulo: 'Reformas', descricao: 'Transformações de espaços com respeito à história e propósito renovado.' },
 ]
 
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Milena',
+  jobTitle: 'Arquiteta e Urbanista',
+  description: 'Arquiteta com mais de 10 anos de experiência em projetos residenciais e comerciais.',
+  url: 'https://milena-arquitetura.vercel.app/sobre',
+  alumniOf: [{ '@type': 'EducationalOrganization', name: 'FAU-USP' }],
+}
+
 export default function About() {
   return (
-    <motion.div variants={fadeIn} initial="hidden" animate="visible">
+    <>
+      <SEO
+        title="Sobre"
+        description="Arquiteta e urbanista com mais de 10 anos de experiência. Formada pela FAU-USP, especialização em Design de Interiores pela FAAP."
+        path="/sobre"
+        schema={schema}
+      />
+      <motion.div variants={fadeIn} initial="hidden" animate="visible">
       <section className="pt-40 pb-20 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.p
@@ -120,5 +138,6 @@ export default function About() {
         </div>
       </section>
     </motion.div>
+    </>
   )
 }
