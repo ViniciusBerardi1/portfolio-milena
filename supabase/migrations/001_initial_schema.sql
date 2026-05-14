@@ -44,22 +44,34 @@ ALTER TABLE contatos        ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "projetos_public_read"
   ON projetos FOR SELECT USING (true);
 
-CREATE POLICY "projetos_auth_write"
-  ON projetos FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "projetos_auth_insert"
+  ON projetos FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "projetos_auth_update"
+  ON projetos FOR UPDATE USING (auth.uid() IS NOT NULL);
+
+CREATE POLICY "projetos_auth_delete"
+  ON projetos FOR DELETE USING (auth.uid() IS NOT NULL);
 
 -- imagens_projeto: leitura pública, escrita somente autenticado
 CREATE POLICY "imagens_public_read"
   ON imagens_projeto FOR SELECT USING (true);
 
-CREATE POLICY "imagens_auth_write"
-  ON imagens_projeto FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "imagens_auth_insert"
+  ON imagens_projeto FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "imagens_auth_update"
+  ON imagens_projeto FOR UPDATE USING (auth.uid() IS NOT NULL);
+
+CREATE POLICY "imagens_auth_delete"
+  ON imagens_projeto FOR DELETE USING (auth.uid() IS NOT NULL);
 
 -- contatos: insert público, leitura somente autenticado
 CREATE POLICY "contatos_public_insert"
   ON contatos FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "contatos_auth_read"
-  ON contatos FOR SELECT USING (auth.role() = 'authenticated');
+  ON contatos FOR SELECT USING (auth.uid() IS NOT NULL);
 
 -- ============================================================
 -- Storage
