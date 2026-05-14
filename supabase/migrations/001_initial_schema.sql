@@ -109,12 +109,8 @@ CREATE POLICY "contatos_auth_read"
 
 -- ============================================================
 -- Storage policies for bucket "imagens"
--- Ensure bucket exists as public
+-- Bucket must be created manually in Storage > New bucket > "imagens" > Public ON
 -- ============================================================
-
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('imagens', 'imagens', true)
-ON CONFLICT (id) DO UPDATE SET public = true;
 
 -- Drop any existing storage policies for this bucket
 DROP POLICY IF EXISTS "imagens_storage_select" ON storage.objects;
