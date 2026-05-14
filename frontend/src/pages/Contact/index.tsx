@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fadeIn, fadeUp, staggerContainer } from '../../animations/variants'
 import type { ContatoForm } from '../../types'
+import { supabase } from '../../utils/supabase'
 
 const contatos = [
   { label: 'Email', value: 'milena@arquitetura.com.br', href: 'mailto:milena@arquitetura.com.br' },
@@ -20,9 +21,20 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('sending')
-    // Supabase integration in Fase 3
-    await new Promise(r => setTimeout(r, 800))
-    setStatus('sent')
+
+    if (!supabase) {
+      await new Promise(r => setTimeout(r, 600))
+      setStatus('sent')
+      return
+    }
+
+    const { error } = await supabase.from('contatos').insert({
+      nome: form.nome,
+      email: form.email,
+      mensagem: form.mensagem,
+    })
+
+    setStatus(error ? 'idle' : 'sent')
   }
 
   return (

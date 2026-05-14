@@ -1,12 +1,26 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { getProjetoById } from '../../utils/mockData'
+import { useProjeto } from '../../hooks/useProjeto'
 import { fadeIn, fadeUp, staggerContainer, scaleIn } from '../../animations/variants'
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const projeto = id ? getProjetoById(id) : undefined
+  const { projeto, loading } = useProjeto(id)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <div className="w-full animate-pulse bg-smoke" style={{ height: '70vh' }} />
+        <div className="max-w-4xl mx-auto px-6 lg:px-12 py-16 space-y-4">
+          <div className="h-3 w-32 bg-smoke rounded" />
+          <div className="h-10 w-80 bg-smoke rounded" />
+          <div className="h-4 w-full bg-smoke rounded" />
+          <div className="h-4 w-3/4 bg-smoke rounded" />
+        </div>
+      </div>
+    )
+  }
 
   if (!projeto) {
     return (
