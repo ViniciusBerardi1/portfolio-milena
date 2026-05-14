@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { supabase } from '../../../utils/supabase'
+import { uploadImage } from '../../../utils/uploadImage'
 import type { ImagemProjeto } from '../../../types'
 
 type ExistingImage = { type: 'existing'; id: string; url: string; alt_text: string }
@@ -8,16 +9,6 @@ type NewImage = { type: 'new'; file: File; preview: string; alt_text: string }
 type ImageItem = ExistingImage | NewImage
 
 const CATEGORIAS = ['Residencial', 'Comercial', 'Interiores', 'Reforma', 'Outro']
-
-async function uploadFile(file: File): Promise<string> {
-  if (!supabase) throw new Error('Supabase não configurado')
-  const ext = file.name.split('.').pop() ?? 'jpg'
-  const path = `projetos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
-  const { error } = await supabase.storage.from('imagens').upload(path, file)
-  if (error) throw new Error(`Storage: ${error.message}`)
-  const { data } = supabase.storage.from('imagens').getPublicUrl(path)
-  return data.publicUrl
-}
 
 export default function ProjectForm() {
   const { id } = useParams<{ id: string }>()
@@ -114,7 +105,7 @@ export default function ProjectForm() {
     try {
       // 1. Upload capa se houve troca
       let finalCapaUrl = capaUrl
-      if (capaFile) finalCapaUrl = await uploadFile(capaFile)
+      if (capaFile) finalCapaUrl = await uploadImage(supabase!, capaFile, 'projetos')
 
       const projetoData = { titulo, descricao, categoria, localizacao, capa_url: finalCapaUrl }
 
@@ -138,7 +129,7 @@ export default function ProjectForm() {
       for (let i = 0; i < images.length; i++) {
         const item = images[i]
         if (item.type === 'new') {
-          const url = await uploadFile(item.file)
+          const url = await uploadImage(supabase!, item.file, 'projetos')
           const { error } = await supabase.from('imagens_projeto').insert({
             projeto_id: projetoId,
             imagem_url: url,

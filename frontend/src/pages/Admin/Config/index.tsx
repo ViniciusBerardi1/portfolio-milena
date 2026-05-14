@@ -1,16 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../../utils/supabase'
+import { uploadImage } from '../../../utils/uploadImage'
 import { DEFAULT_CONFIG } from '../../../hooks/useSiteConfig'
 import type { SiteConfig, Especialidade } from '../../../types'
-
-async function uploadFoto(file: File): Promise<string> {
-  if (!supabase) throw new Error('Supabase não configurado')
-  const ext = file.name.split('.').pop() ?? 'jpg'
-  const path = `config/sobre-${Date.now()}.${ext}`
-  const { error } = await supabase.storage.from('imagens').upload(path, file, { upsert: true })
-  if (error) throw new Error(`Storage: ${error.message}`)
-  return supabase.storage.from('imagens').getPublicUrl(path).data.publicUrl
-}
 
 export default function AdminConfig() {
   const [config, setConfig] = useState<SiteConfig>(DEFAULT_CONFIG)
@@ -75,11 +67,11 @@ export default function AdminConfig() {
 
   const handleFotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file || !supabase) return
     setUploadingFoto(true)
     setError('')
     try {
-      const url = await uploadFoto(file)
+      const url = await uploadImage(supabase, file, 'config')
       set('sobre_foto_url', url)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer upload.')

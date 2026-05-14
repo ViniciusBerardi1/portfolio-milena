@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase'
 import type { SiteConfig } from '../types'
 
 export const DEFAULT_CONFIG: SiteConfig = {
-  sobre_foto_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80',
+  sobre_foto_url: '',
   sobre_nome: 'Milena',
   sobre_cargo: 'Arquiteta e Urbanista',
   sobre_bio1: 'Arquiteta e urbanista com mais de 10 anos de experiência em projetos residenciais e comerciais. Formada pela FAU-USP, com especialização em Design de Interiores pela FAAP.',

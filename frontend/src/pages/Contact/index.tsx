@@ -6,36 +6,63 @@ import { supabase } from '../../utils/supabase'
 import SEO from '../../components/SEO'
 import { useSiteConfig } from '../../hooks/useSiteConfig'
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function validateForm(form: ContatoForm): string | null {
+  if (!form.nome.trim() || form.nome.length > 100)
+    return 'Nome deve ter entre 1 e 100 caracteres.'
+  if (!EMAIL_RE.test(form.email) || form.email.length > 254)
+    return 'Email inválido.'
+  if (form.mensagem.trim().length < 10 || form.mensagem.length > 5000)
+    return 'Mensagem deve ter entre 10 e 5000 caracteres.'
+  return null
+}
+
+function safePhone(val: string) {
+  return val.replace(/\D/g, '').slice(0, 15)
+}
+
+function safeHandle(val: string) {
+  return val.replace(/[^a-zA-Z0-9._]/g, '').slice(0, 50)
+}
+
 export default function Contact() {
   const { config } = useSiteConfig()
   const [form, setForm] = useState<ContatoForm>({ nome: '', email: '', mensagem: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [validationError, setValidationError] = useState('')
 
   const contatos = [
     {
       label: 'Email',
       value: config.contato_email,
-      href: `mailto:${config.contato_email}`,
+      href: EMAIL_RE.test(config.contato_email) ? `mailto:${config.contato_email}` : '#',
     },
     {
       label: 'WhatsApp',
       value: config.contato_whatsapp,
-      href: `https://wa.me/${config.contato_whatsapp.replace(/\D/g, '')}`,
+      href: `https://wa.me/${safePhone(config.contato_whatsapp)}`,
     },
     {
       label: 'Instagram',
       value: config.contato_instagram,
-      href: `https://instagram.com/${config.contato_instagram.replace('@', '')}`,
+      href: `https://instagram.com/${safeHandle(config.contato_instagram)}`,
     },
   ]
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    setValidationError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const err = validateForm(form)
+    if (err) { setValidationError(err); return }
+
     setStatus('sending')
+    setValidationError('')
 
     if (!supabase) {
       await new Promise(r => setTimeout(r, 600))
@@ -43,13 +70,29 @@ export default function Contact() {
       return
     }
 
-    const { error } = await supabase.from('contatos').insert({
-      nome: form.nome,
-      email: form.email,
-      mensagem: form.mensagem,
-    })
+    try {
+      const { error } = await supabase.functions.invoke('contact-submit', {
+        body: {
+          nome:     form.nome.trim().slice(0, 100),
+          email:    form.email.trim().slice(0, 254),
+          mensagem: form.mensagem.trim().slice(0, 5000),
+        },
+      })
 
-    setStatus(error ? 'idle' : 'sent')
+      if (error) {
+        const msg = typeof error === 'object' && 'message' in error
+          ? String(error.message)
+          : 'Erro ao enviar mensagem.'
+        if (msg.includes('Muitas mensagens')) {
+          setValidationError(msg)
+        }
+        setStatus('idle')
+      } else {
+        setStatus('sent')
+      }
+    } catch {
+      setStatus('idle')
+    }
   }
 
   return (
@@ -171,6 +214,9 @@ export default function Contact() {
                     className="w-full border-b border-smoke bg-transparent py-3 text-charcoal focus:outline-none focus:border-charcoal transition-colors resize-none placeholder:text-mist/50"
                   />
                 </div>
+                {validationError && (
+                  <p className="text-sm text-red-500">{validationError}</p>
+                )}
                 <button
                   type="submit"
                   disabled={status === 'sending'}

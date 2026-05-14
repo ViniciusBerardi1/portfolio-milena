@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../../utils/supabase'
 import { useAuth } from '../../../hooks/useAuth'
+
+const MAX_ATTEMPTS = 5
+const LOCKOUT_MS = 5 * 60 * 1000
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -10,6 +13,8 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const attempts = useRef(0)
+  const lockedUntil = useRef<number | null>(null)
 
   useEffect(() => {
     if (!loading && user) navigate('/admin', { replace: true })
@@ -18,12 +23,26 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!supabase) return
+
+    if (lockedUntil.current && Date.now() < lockedUntil.current) {
+      const secs = Math.ceil((lockedUntil.current - Date.now()) / 1000)
+      setError(`Muitas tentativas. Aguarde ${secs}s para tentar novamente.`)
+      return
+    }
+
     setSubmitting(true)
     setError('')
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError('Email ou senha incorretos.')
+      attempts.current += 1
+      if (attempts.current >= MAX_ATTEMPTS) {
+        lockedUntil.current = Date.now() + LOCKOUT_MS
+        setError('Acesso bloqueado por 5 minutos após muitas tentativas incorretas.')
+      } else {
+        const remaining = MAX_ATTEMPTS - attempts.current
+        setError(`Email ou senha incorretos. ${remaining} tentativa${remaining !== 1 ? 's' : ''} restante${remaining !== 1 ? 's' : ''}.`)
+      }
       setSubmitting(false)
     } else {
       navigate('/admin', { replace: true })

@@ -47,21 +47,23 @@ export default function About() {
       </section>
 
       <section className="px-6 lg:px-12 pb-16 md:pb-24">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <motion.div
-            className="overflow-hidden"
-            variants={fadeIn}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <img
-              src={config.sobre_foto_url}
-              alt={config.sobre_nome + ', arquiteta'}
-              className="w-full object-cover aspect-[3/4]"
-              loading="lazy"
-            />
-          </motion.div>
+        <div className={`max-w-7xl mx-auto grid grid-cols-1 gap-10 lg:gap-16 items-center${config.sobre_foto_url ? ' lg:grid-cols-2' : ''}`}>
+          {config.sobre_foto_url && (
+            <motion.div
+              className="overflow-hidden"
+              variants={fadeIn}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <img
+                src={config.sobre_foto_url}
+                alt={config.sobre_nome + ', arquiteta'}
+                className="w-full object-cover aspect-[3/4]"
+                loading="lazy"
+              />
+            </motion.div>
+          )}
 
           <motion.div
             variants={staggerContainer}
