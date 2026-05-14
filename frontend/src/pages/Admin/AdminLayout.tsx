@@ -34,6 +34,14 @@ export default function AdminLayout() {
             >
               Projetos
             </NavLink>
+            <NavLink
+              to="/admin/configuracoes"
+              className={({ isActive }) =>
+                `text-sm transition-colors ${isActive ? 'text-charcoal font-medium' : 'text-gray-500 hover:text-charcoal'}`
+              }
+            >
+              Configurações
+            </NavLink>
           </nav>
         </div>
         <button

@@ -1,32 +1,26 @@
 import { motion } from 'framer-motion'
 import { fadeIn, fadeUp, staggerContainer } from '../../animations/variants'
 import SEO from '../../components/SEO'
-
-const ABOUT_IMAGE = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80'
-
-const especialidades = [
-  { titulo: 'Residencial', descricao: 'Casas e apartamentos que expressam a personalidade de quem os habita.' },
-  { titulo: 'Comercial', descricao: 'Espaços corporativos e de varejo que comunicam a essência de cada marca.' },
-  { titulo: 'Interiores', descricao: 'Design de interiores refinado, com atenção a cada detalhe e material.' },
-  { titulo: 'Reformas', descricao: 'Transformações de espaços com respeito à história e propósito renovado.' },
-]
-
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Milena',
-  jobTitle: 'Arquiteta e Urbanista',
-  description: 'Arquiteta com mais de 10 anos de experiência em projetos residenciais e comerciais.',
-  url: 'https://milena-arquitetura.vercel.app/sobre',
-  alumniOf: [{ '@type': 'EducationalOrganization', name: 'FAU-USP' }],
-}
+import { useSiteConfig } from '../../hooks/useSiteConfig'
 
 export default function About() {
+  const { config } = useSiteConfig()
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: config.sobre_nome,
+    jobTitle: config.sobre_cargo,
+    description: config.sobre_bio1,
+    url: 'https://milena-arquitetura.vercel.app/sobre',
+    alumniOf: [{ '@type': 'EducationalOrganization', name: 'FAU-USP' }],
+  }
+
   return (
     <>
       <SEO
         title="Sobre"
-        description="Arquiteta e urbanista com mais de 10 anos de experiência. Formada pela FAU-USP, especialização em Design de Interiores pela FAAP."
+        description={config.sobre_bio1}
         path="/sobre"
         schema={schema}
       />
@@ -62,8 +56,8 @@ export default function About() {
             viewport={{ once: true }}
           >
             <img
-              src={ABOUT_IMAGE}
-              alt="Milena, arquiteta"
+              src={config.sobre_foto_url}
+              alt={config.sobre_nome + ', arquiteta'}
               className="w-full object-cover aspect-[3/4]"
               loading="lazy"
             />
@@ -76,66 +70,78 @@ export default function About() {
             viewport={{ once: true }}
           >
             <motion.h2
-              className="font-serif text-3xl lg:text-4xl font-light text-charcoal mb-6"
+              className="font-serif text-3xl lg:text-4xl font-light text-charcoal mb-1"
               variants={fadeUp}
             >
-              Milena
+              {config.sobre_nome}
             </motion.h2>
+            <motion.p
+              className="text-xs text-mist tracking-widest uppercase mb-6"
+              variants={fadeUp}
+            >
+              {config.sobre_cargo}
+            </motion.p>
             <motion.p
               className="text-mist leading-relaxed mb-6 font-light text-lg"
               variants={fadeUp}
             >
-              Arquiteta e urbanista com mais de 10 anos de experiência em projetos residenciais e comerciais. Formada pela FAU-USP, com especialização em Design de Interiores pela FAAP.
+              {config.sobre_bio1}
             </motion.p>
-            <motion.p
-              className="text-mist leading-relaxed mb-6 font-light"
-              variants={fadeUp}
-            >
-              Minha abordagem é sempre centrada no cliente: entender seus sonhos, sua rotina e sua personalidade é o ponto de partida para criar espaços que realmente façam sentido para quem os vive.
-            </motion.p>
-            <motion.p
-              className="text-mist leading-relaxed font-light"
-              variants={fadeUp}
-            >
-              Acredito que a boa arquitetura não precisa gritar — ela sussurra, com elegância e precisão.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="bg-stone py-24 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="mb-16"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <p className="text-xs text-mist tracking-[0.3em] uppercase mb-3">Atuação</p>
-            <h2 className="font-serif text-4xl font-light text-charcoal">Especialidades</h2>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {especialidades.map(esp => (
-              <motion.div
-                key={esp.titulo}
+            {config.sobre_bio2 && (
+              <motion.p
+                className="text-mist leading-relaxed mb-6 font-light"
                 variants={fadeUp}
-                className="border-t border-smoke pt-6"
               >
-                <h3 className="font-serif text-xl text-charcoal mb-3">{esp.titulo}</h3>
-                <p className="text-mist text-sm font-light leading-relaxed">{esp.descricao}</p>
-              </motion.div>
-            ))}
+                {config.sobre_bio2}
+              </motion.p>
+            )}
+            {config.sobre_bio3 && (
+              <motion.p
+                className="text-mist leading-relaxed font-light"
+                variants={fadeUp}
+              >
+                {config.sobre_bio3}
+              </motion.p>
+            )}
           </motion.div>
         </div>
       </section>
+
+      {config.sobre_especialidades.length > 0 && (
+        <section className="bg-stone py-24 px-6 lg:px-12">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="mb-16"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <p className="text-xs text-mist tracking-[0.3em] uppercase mb-3">Atuação</p>
+              <h2 className="font-serif text-4xl font-light text-charcoal">Especialidades</h2>
+            </motion.div>
+
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {config.sobre_especialidades.map(esp => (
+                <motion.div
+                  key={esp.titulo}
+                  variants={fadeUp}
+                  className="border-t border-smoke pt-6"
+                >
+                  <h3 className="font-serif text-xl text-charcoal mb-3">{esp.titulo}</h3>
+                  <p className="text-mist text-sm font-light leading-relaxed">{esp.descricao}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
     </motion.div>
     </>
   )

@@ -12,6 +12,7 @@ const AdminLogin = lazy(() => import('./pages/Admin/Login'))
 const AdminDashboard = lazy(() => import('./pages/Admin/Dashboard'))
 const AdminProjects = lazy(() => import('./pages/Admin/Projects'))
 const ProjectForm = lazy(() => import('./pages/Admin/Projects/ProjectForm'))
+const AdminConfig = lazy(() => import('./pages/Admin/Config'))
 
 function PageLoader() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="projetos" element={<AdminProjects />} />
               <Route path="projetos/novo" element={<ProjectForm />} />
               <Route path="projetos/:id/editar" element={<ProjectForm />} />
+              <Route path="configuracoes" element={<AdminConfig />} />
             </Route>
           </Route>
         </Routes>

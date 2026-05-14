@@ -22,3 +22,21 @@ export interface ContatoForm {
   email: string
   mensagem: string
 }
+
+export interface Especialidade {
+  titulo: string
+  descricao: string
+}
+
+export interface SiteConfig {
+  sobre_foto_url: string
+  sobre_nome: string
+  sobre_cargo: string
+  sobre_bio1: string
+  sobre_bio2: string
+  sobre_bio3: string
+  sobre_especialidades: Especialidade[]
+  contato_email: string
+  contato_whatsapp: string
+  contato_instagram: string
+}

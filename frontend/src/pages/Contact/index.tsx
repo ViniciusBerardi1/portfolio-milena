@@ -4,16 +4,30 @@ import { fadeIn, fadeUp, staggerContainer } from '../../animations/variants'
 import type { ContatoForm } from '../../types'
 import { supabase } from '../../utils/supabase'
 import SEO from '../../components/SEO'
-
-const contatos = [
-  { label: 'Email', value: 'milena@arquitetura.com.br', href: 'mailto:milena@arquitetura.com.br' },
-  { label: 'WhatsApp', value: '+55 11 99999-9999', href: 'https://wa.me/5511999999999' },
-  { label: 'Instagram', value: '@milena.arquitetura', href: 'https://instagram.com' },
-]
+import { useSiteConfig } from '../../hooks/useSiteConfig'
 
 export default function Contact() {
+  const { config } = useSiteConfig()
   const [form, setForm] = useState<ContatoForm>({ nome: '', email: '', mensagem: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+
+  const contatos = [
+    {
+      label: 'Email',
+      value: config.contato_email,
+      href: `mailto:${config.contato_email}`,
+    },
+    {
+      label: 'WhatsApp',
+      value: config.contato_whatsapp,
+      href: `https://wa.me/${config.contato_whatsapp.replace(/\D/g, '')}`,
+    },
+    {
+      label: 'Instagram',
+      value: config.contato_instagram,
+      href: `https://instagram.com/${config.contato_instagram.replace('@', '')}`,
+    },
+  ]
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
